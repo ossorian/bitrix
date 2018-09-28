@@ -1,7 +1,7 @@
 $(document).mouseup(function (e) {
     var container = $("ul.bxr-sku2-select-items");
 	var containers = $("ul.bxr-sku2-select-items, div.bxr-market-sku2-select-wrap");
-	if (containers.length > 0) {
+	if (containers.length > 0 && container.is(':visible')) {
 		if (containers.has(e.target).length === 0){
 			container.hide();
 			offerSelectorArrowToggle();
