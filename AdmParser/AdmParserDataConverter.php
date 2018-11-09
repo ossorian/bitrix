@@ -51,7 +51,8 @@ class AdmParserDataConverter extends AdmParser
 				"IBLOCK_ID" => $this->iblockID,
 				"NAME" => $item['name'],
 				"PREVIEW_TEXT" => $item['text'],
-				"DETAIL_TEXT" => $item['href']
+				"DETAIL_TEXT" => $item['href'],
+				"ACTIVE_FROM" => $item['date']//self::convertDate($item["date"]),
 			),
 			false, true, false
 		);
@@ -64,12 +65,19 @@ class AdmParserDataConverter extends AdmParser
 			array(
 				"NAME" => $item['name'],
 				"PREVIEW_TEXT" => $item['text'],
+				"ACTIVE_FROM" => $item['date']//self::convertDate($item["date"])
 			),
 			false, false, false, false
 		);
 	}
 
+	private static function convertDate($initialDate)
+	{
+		return $timestamp = MakeTimeStamp($initialDate, 'DD.MM.YYYY');
+	}
+	
 	private function makeSortedData(){
+		if (empty($this->rawData)) return;
 		foreach($this->rawData as $datum)
 		{
 			$this->data[$datum['DETAIL_TEXT']] = array(
