@@ -15,6 +15,8 @@ class AdmParser
 	{
 		libxml_use_internal_errors(true);
 		foreach ($arUri as $uri){
+			
+			$domain = self::getDomain($uri);
 			$doc = new DOMDocument();
 			if (!$doc->loadHTMLFile($uri)) self::showError(1, $uri);
 
@@ -37,9 +39,11 @@ class AdmParser
 				
 				if ($name && $href){
 					$arCandidates[] = array(
-						"href" => $href,
+						"href" => (strpos($domain, $href) === false) ? $domain.$href : $href,
 						"name" => $name,
-						"text" => $date.'|'.$text
+						"text" => $text,
+						"date" => $date
+						
 					);
 				}
 			}
@@ -59,7 +63,7 @@ class AdmParser
 			"LID" => 's1',
 			"CODE" => self::IBLOCK_CODE,
 			"IBLOCK_TYPE_ID" => self::IBLOCK_TYPE_CODE,
-			"NAME" => "Автоматическая информация о конкурсах и аукционах",
+			"NAME" => GetMessage("PARSER_IBLOCK_NAME"),
 			"SORT" => 1000,
 			"WORKFLOW" => "N",
 			"VERSION" => 2,
@@ -81,6 +85,12 @@ class AdmParser
 			$DB->Commit();
 		}
 		return $result;
+	}
+	
+	private static function getDomain($uri)
+	{
+		$url = parse_url($uri);
+		return $url['scheme'].'://'.$url['host'];
 	}
 	
 	private static function checkIblockType()
