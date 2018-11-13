@@ -60,10 +60,14 @@ require 'config.php';
 	<!-- HEADER SECTION -->
 	<header class="info">
 		<div class="flex-row">
-			<div class="logo">
-				<img src="/newmap/images/logo.png" alt="">
-			</div>
-			<p class="logo-title"><?= $MESS['INVEST_MAP']?> <br/ ><?= $MESS['CITY_NAME']?></p>
+			<a href="/" title="<?=$MESS['INVEST_MAP']?>">
+				<div class="logo">
+					<img src="/newmap/images/logo.png" alt="">
+				</div>
+			</a>
+			<a href="/" style="text-decoration:none" title="<?=$MESS['INVEST_MAP']?>">
+				<p class="logo-title"><?=$MESS['INVEST_MAP']?> <br/ ><?=$MESS['CITY_NAME']?></p>
+			</a>
 			<!-- <div class="form-wrapper">
 				<form action="post" id="search-form">
 					<label class="search">
