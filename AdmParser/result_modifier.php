@@ -1,7 +1,8 @@
 <?php
 foreach ($arResult["ITEMS"] as &$item) {
 	$item["DETAIL_PAGE_URL"] = $item["~DETAIL_TEXT"];
-	//var_dump($item);
+	if (($len = strlen($item["NAME"])) == 255 && $item["NAME"]{$len - 1} != ' ' )
+		$item["NAME"] .= "...";
 }
 
 include('parse.php');

@@ -1,45 +1,48 @@
 <?php
 /** README FIRST!
 - To get other urls from other resources you just need to make some more candidates with the same structure:
-$arCandidates[] = array("href", "name", "text")
-- As the date format may differ from website to website, you should insert it as a string in text field
-- No date fields included into the Iblock because of the same reason and in order not to make special property fields
+$arCandidates[] = array("href", "name", "text", "date")
+- The date format is strict not due to change on the distant site!
  */
 class AdmParser
 {
-	
+
 	const IBLOCK_CODE = 'estate_parse1';
 	const IBLOCK_TYPE_CODE = 'parsers';
-	
+	const ENCODING = "UTF8";
+
 	public static function getCandidates($arUri = array())
 	{
 		libxml_use_internal_errors(true);
 		foreach ($arUri as $uri){
-			
+			if (empty($uri)) continue;
 			$domain = self::getDomain($uri);
 			$doc = new DOMDocument();
-			if (!$doc->loadHTMLFile($uri)) self::showError(1, $uri);
+			if (!$doc->loadHTMLFile($uri)) {self::showError(1, $uri);continue;}
 
 			$xpath = new DOMXPath($doc);
 			$items = $xpath->query('//div[@class="contentwr"]/div[@class="news-list"]/p[@class="news-item"]');
 			foreach ($items as $i => $item) {
-			
+
 				if ($font = $item->getElementsByTagName('font')[0])
-					$date = iconv('UTF8', 'CP1251', $font->nodeValue);
+					$date = self::convertText($font->nodeValue);
 				elseif ($span = $item->getElementsByTagName('span')[0])
-					$date = iconv('UTF8', 'CP1251', $span->nodeValue);
-				
+					$date = self::convertText($span->nodeValue);
+
 				if ($a = $item->getElementsByTagName('a')[0]) {
-					$name = trim(iconv('UTF8', 'CP1251', $a->nodeValue));
+					$name = trim(self::convertText($a->nodeValue));
 					$href = $a->getAttribute('href');
 				}
 
-				$text = trim(str_replace(array($date, $name), '', iconv('UTF8', 'CP1251', $item->nodeValue)));
-				
-				
+				$text = trim(str_replace(array($date, $name), '', self::convertText($item->nodeValue)));
+				$text = strip_tags($text);
+				if (intval($text)) $text =''; //to decline view numbers only
+
+				//var_dump($name, $text, $date, $href);
+				//continue;
 				if ($name && $href){
 					$arCandidates[] = array(
-						"href" => (strpos($domain, $href) === false) ? $domain.$href : $href,
+						"href" => (strpos($domain, $href) === false) ? $domain.'/'.$href : $href,
 						"name" => $name,
 						"text" => $text,
 						"date" => $date
@@ -63,7 +66,7 @@ class AdmParser
 			"LID" => 's1',
 			"CODE" => self::IBLOCK_CODE,
 			"IBLOCK_TYPE_ID" => self::IBLOCK_TYPE_CODE,
-			"NAME" => GetMessage("PARSER_IBLOCK_NAME"),
+			"NAME" => '–ê–≤—Ç–æ–º–∞—Ç–∏—á–µ—Å–∫–∞—è –∏–Ω—Ñ–æ—Ä–º–∞—Ü–∏—è –æ –∫–æ–Ω–∫—É—Ä—Å–∞—Ö –∏ –∞—É–∫—Ü–∏–æ–Ω–∞—Ö',
 			"SORT" => 1000,
 			"WORKFLOW" => "N",
 			"VERSION" => 2,
@@ -86,7 +89,14 @@ class AdmParser
 		}
 		return $result;
 	}
-	
+
+	private static function convertText($text)
+	{
+		if (self::ENCODING == "UTF8") return $text;
+		elseif (self::ENCODING == "CP1251") return iconv('UTF8', 'CP1251', $text);
+			else return $text; //future encodings
+	}
+
 	private static function getDomain($uri)
 	{
 		$url = parse_url($uri);
@@ -109,9 +119,9 @@ class AdmParser
 					'ELEMENT_NAME'=>'Distant information'
 				),
 				'ru'=>Array(
-					'NAME'=>'œ‡ÒÂ˚',
-					'SECTION_NAME'=>'ŒÚÒÛÚÒÚ‚ÛÂÚ',
-					'ELEMENT_NAME'=>'¡ÎÓÍ ËÌÙÓÏ‡ˆËË'
+					'NAME'=>'–ü–∞—Ä—Å–µ—Ä—ã',
+					'SECTION_NAME'=>'–û—Ç—Å—É—Ç—Å—Ç–≤—É–µ—Ç',
+					'ELEMENT_NAME'=>'–ë–ª–æ–∫ –∏–Ω—Ñ–æ—Ä–º–∞—Ü–∏–∏'
 				)
 			)
 		);
@@ -135,12 +145,12 @@ class AdmParser
 	private static function showError($number, $uri = false)
 	{
 		$error = array(
-			1 => "ÕÂ Û‰‡∏ÚÒˇ Á‡„ÛÁËÚ¸ ÒÚ‡ÌËˆÛ $uri ‰Îˇ ÔÂ‰ÓÒÚ‡‚ÎÂÌËˇ ËÌÙÓÏ‡ˆËË. œÓÊ‡ÎÛÈÒÚ‡ ËÒÔ‡‚¸ÚÂ Ì‡ÒÚÓÈÍË ÍÓÏÔÓÌÂÌÚ‡",
-			2 => "ÕÂ Û‰‡ÎÓÒ¸ Ì‡ÈÚË ˝ÎÂÏÂÌÚ˚ ‰Îˇ ÓÚÓ·‡ÊÂÌËˇ Ì‡ ÒÚ‡ÌËˆÂ $uri. »ÁÏÂÌËÎÒˇ ¯‡·ÎÓÌ ÍÓÏÔÓÌÂÌÚ‡.",
-			3 => "ÕÂ Û‰‡ÎÓÒ¸ ÒÓÁ‰‡Ú¸ ÌÓ‚˚È ÚËÔ ËÌÙÓ·ÎÓÍ‡",
-			4 => "ÕÂ Û‰‡ÎÓÒ¸ ÒÓÁ‰‡Ú¸ ËÌÙÓ·ÎÓÍ ‰Îˇ ı‡ÂÌËˇ ËÌÙÓÏ‡ˆËË"
+			1 => "–ù–µ —É–¥–∞—ë—Ç—Å—è –∑–∞–≥—Ä—É–∑–∏—Ç—å —Å—Ç—Ä–∞–Ω–∏—Ü—É $uri –¥–ª—è –ø—Ä–µ–¥–æ—Å—Ç–∞–≤–ª–µ–Ω–∏—è –∏–Ω—Ñ–æ—Ä–º–∞—Ü–∏–∏. –ü–æ–∂–∞–ª—É–π—Å—Ç–∞ –∏—Å–ø—Ä–∞–≤—å—Ç–µ –Ω–∞—Å—Ç—Ä–æ–π–∫–∏ –∫–æ–º–ø–æ–Ω–µ–Ω—Ç–∞",
+			2 => "–ù–µ —É–¥–∞–ª–æ—Å—å –Ω–∞–π—Ç–∏ —ç–ª–µ–º–µ–Ω—Ç—ã –¥–ª—è –æ—Ç–æ–±—Ä–∞–∂–µ–Ω–∏—è –Ω–∞ —Å—Ç—Ä–∞–Ω–∏—Ü–µ $uri. –ò–∑–º–µ–Ω–∏–ª—Å—è —à–∞–±–ª–æ–Ω –∫–æ–º–ø–æ–Ω–µ–Ω—Ç–∞ –∏–ª–∏ –Ω–µ–≤–µ—Ä–Ω–æ–µ –ø–µ—Ä–µ–¥–∞–Ω URL —Å—Ç—Ä–∞–Ω–∏—Ü—ã.",
+			3 => "–ù–µ —É–¥–∞–ª–æ—Å—å —Å–æ–∑–¥–∞—Ç—å –Ω–æ–≤—ã–π —Ç–∏–ø –∏–Ω—Ñ–æ–±–ª–æ–∫–∞",
+			4 => "–ù–µ —É–¥–∞–ª–æ—Å—å —Å–æ–∑–¥–∞—Ç—å –∏–Ω—Ñ–æ–±–ª–æ–∫ –¥–ª—è —Ö—Ä–∞–Ω–µ–Ω–∏—è –∏–Ω—Ñ–æ—Ä–º–∞—Ü–∏–∏"
 		);
-		echo '<font color="red">'.$error[$number].'</font><br>';
+		echo '<font color="red">'.str_replace('$uri', $uri, $error[$number]).'</font><br>';
 	}
 	
 	
