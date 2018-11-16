@@ -22,5 +22,24 @@ $arTemplateParameters = array(
 		"TYPE" => "CHECKBOX",
 		"DEFAULT" => "Y",
 	),
+	"DISTANT_URLS" => Array(
+		"PARENT" => "BASE",
+		"NAME" => GetMessage("DISTANT_URLS"),
+		"TYPE" => "STRING",
+		"MULTIPLE" => "Y"
+	),
+	"IS_DEBUG" => Array(
+		"PARENT" => "BASE",
+		"NAME" => GetMessage("IS_DEBUG_ON"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "N"
+	),
+	"IS_PARSE" => Array(
+		"PARENT" => "BASE",
+		"NAME" => GetMessage("IS_PARSER_OFF"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "Y"
+	)
 );
+
 ?>

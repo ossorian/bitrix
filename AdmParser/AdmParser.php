@@ -1,15 +1,21 @@
 <?php
 /** README FIRST!
+
 - To get other urls from other resources you just need to make some more candidates with the same structure:
-$arCandidates[] = array("href", "name", "text", "date")
-- The date format is strict not due to change on the distant site!
+$arCandidates[] = array("href", "name", "text", "date") and with the same encoding;
+
+- The date format is strict not due to change on the distant site! If you want modify it you can try in getCandidates method, but don't forget the date just replaced in "text" as ther is now html tag to get text;
+
+Version 1.01 Changes:
+* Putting different url data to specific folder to show them later differently
+* Encoding changes precisely to SITE_CHARSET constant
+
  */
 class AdmParser
 {
 
 	const IBLOCK_CODE = 'estate_parse1';
 	const IBLOCK_TYPE_CODE = 'parsers';
-	const ENCODING = "UTF8";
 
 	public static function getCandidates($arUri = array())
 	{
@@ -36,10 +42,8 @@ class AdmParser
 
 				$text = trim(str_replace(array($date, $name), '', self::convertText($item->nodeValue)));
 				$text = strip_tags($text);
-				if (intval($text)) $text =''; //to decline view numbers only
-
-				//var_dump($name, $text, $date, $href);
-				//continue;
+				if (intval($text)) $text =''; 
+				
 				if ($name && $href){
 					$arCandidates[] = array(
 						"href" => (strpos($domain, $href) === false) ? $domain.'/'.$href : $href,
@@ -66,7 +70,7 @@ class AdmParser
 			"LID" => 's1',
 			"CODE" => self::IBLOCK_CODE,
 			"IBLOCK_TYPE_ID" => self::IBLOCK_TYPE_CODE,
-			"NAME" => 'Автоматическая информация о конкурсах и аукционах',
+			"NAME" => self::convertText('Автоматическая информация о конкурсах и аукционах'),
 			"SORT" => 1000,
 			"WORKFLOW" => "N",
 			"VERSION" => 2,
@@ -92,15 +96,18 @@ class AdmParser
 
 	private static function convertText($text)
 	{
-		if (self::ENCODING == "UTF8") return $text;
-		elseif (self::ENCODING == "CP1251") return iconv('UTF8', 'CP1251', $text);
-			else return $text; //future encodings
+		if (SITE_CHARSET == 'windows-1251') return iconv('UTF8', 'CP1251', $text);
+		else return $text;//utf-8 e.t.c.
 	}
 
 	private static function getDomain($uri)
 	{
 		$url = parse_url($uri);
 		return $url['scheme'].'://'.$url['host'];
+	}
+	
+	public static function getSectionName($uri)
+	{
 	}
 	
 	private static function checkIblockType()
@@ -119,9 +126,9 @@ class AdmParser
 					'ELEMENT_NAME'=>'Distant information'
 				),
 				'ru'=>Array(
-					'NAME'=>'Парсеры',
-					'SECTION_NAME'=>'Отсутствует',
-					'ELEMENT_NAME'=>'Блок информации'
+					'NAME'=>self::convertText('Парсеры'),
+					'SECTION_NAME'=>self::convertText('Отсутствует'),
+					'ELEMENT_NAME'=>self::convertText('Блок информации')
 				)
 			)
 		);
@@ -150,7 +157,7 @@ class AdmParser
 			3 => "Не удалось создать новый тип инфоблока",
 			4 => "Не удалось создать инфоблок для хранения информации"
 		);
-		echo '<font color="red">'.str_replace('$uri', $uri, $error[$number]).'</font><br>';
+		echo '<font color="red">'.str_replace('$uri', $uri, slef::convertText($error[$number])).'</font><br>';
 	}
 	
 	
