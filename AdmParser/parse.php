@@ -2,7 +2,8 @@
 /* Version 1.01 Changes:
 * Putting different url data to specific folder to show them later differently in AdmParser.php
 * Encoding changes precisely to SITE_CHARSET constant in AdmParser.php
-* Using $arParams["IS_PARSE"] parameter to switxch it off just fow rendering, not parsing. Necessary for using the parser in some folders together.
+* Using $arParams["IS_PARSE_OFF"] parameter to switch it off just fow rendering, not parsing. Necessary for using the parser in some folders together.
+* Using $arParams["PARSE_TO_SECTIONS"] parameter to switch parsing to iblock sections.
 */
 
 /* Starting conditions */
