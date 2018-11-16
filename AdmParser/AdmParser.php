@@ -9,6 +9,7 @@ $arCandidates[] = array("href", "name", "text", "date") and with the same encodi
 Version 1.01 Changes:
 * Putting different url data to specific folder to show them later differently
 * Encoding changes precisely to SITE_CHARSET constant
+* One can add "sectionName" to $arCandidates to put it in proper sectionID in future
 
  */
 class AdmParser
@@ -16,8 +17,9 @@ class AdmParser
 
 	const IBLOCK_CODE = 'estate_parse1';
 	const IBLOCK_TYPE_CODE = 'parsers';
+	private static $sectionNames = array();
 
-	public static function getCandidates($arUri = array())
+	public static function getCandidates($arUri = array(), $parseParams = array())
 	{
 		libxml_use_internal_errors(true);
 		foreach ($arUri as $uri){
@@ -27,7 +29,7 @@ class AdmParser
 			if (!$doc->loadHTMLFile($uri)) {self::showError(1, $uri);continue;}
 
 			$xpath = new DOMXPath($doc);
-			$items = $xpath->query('//div[@class="contentwr"]/div[@class="news-list"]/p[@class="news-item"]');
+			$items = $xpath->query('//div[@class="contentwr"]/div[@class="news-list"]/p[@class="news-item"]');//This mask may change!
 			foreach ($items as $i => $item) {
 
 				if ($font = $item->getElementsByTagName('font')[0])
@@ -49,8 +51,8 @@ class AdmParser
 						"href" => (strpos($domain, $href) === false) ? $domain.'/'.$href : $href,
 						"name" => $name,
 						"text" => $text,
-						"date" => $date
-						
+						"date" => $date,
+						"sectionName" => $parseParams["PARSE_TO_SECTIONS"] ? self::getSectionName($uri) : NULL
 					);
 				}
 			}
@@ -106,8 +108,12 @@ class AdmParser
 		return $url['scheme'].'://'.$url['host'];
 	}
 	
-	public static function getSectionName($uri)
+	private static function getSectionName($uri)
 	{
+		if (!empty(self::$sectionNames[$uri])) return self::$sectionNames[$uri];
+		$url = parse_url($uri);
+		$sectionName = trim(str_replace('/', '-', $url['path']), ' -');
+		return self::$sectionNames[$uri] = $sectionName;
 	}
 	
 	private static function checkIblockType()

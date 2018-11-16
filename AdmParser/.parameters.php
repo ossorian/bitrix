@@ -28,17 +28,23 @@ $arTemplateParameters = array(
 		"TYPE" => "STRING",
 		"MULTIPLE" => "Y"
 	),
+	"PARSE_TO_SECTIONS" => Array(
+		"PARENT" => "BASE",
+		"NAME" => GetMessage("PARSE_TO_SECTIONS"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "N"
+	),
 	"IS_DEBUG" => Array(
 		"PARENT" => "BASE",
 		"NAME" => GetMessage("IS_DEBUG_ON"),
 		"TYPE" => "CHECKBOX",
 		"DEFAULT" => "N"
 	),
-	"IS_PARSE" => Array(
+	"IS_PARSER_OFF" => Array(
 		"PARENT" => "BASE",
 		"NAME" => GetMessage("IS_PARSER_OFF"),
 		"TYPE" => "CHECKBOX",
-		"DEFAULT" => "Y"
+		"DEFAULT" => "N"
 	)
 );
 

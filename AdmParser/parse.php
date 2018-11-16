@@ -6,7 +6,7 @@
 */
 
 /* Starting conditions */
-if ($arParams["IS_PARSE"] == "Y") return;
+if ($arParams["IS_PARSER_OFF"] == "Y") return;
 if (!is_array($arParams["DISTANT_URLS"]) || empty($arParams["DISTANT_URLS"])) return;
 
 $debug = ($arParams["IS_DEBUG"] == "Y");
@@ -16,20 +16,24 @@ if ($debug){
 	$time = microtime();
 }
 
-
-return;
-
 /* Body */
 
 include('AdmParser.php');
 include('AdmParserDataConverter.php');
 if (!AdmParser::checkIblock()) return;
 
-if (!$arCandidates = AdmParser::getCandidates($arParams["DISTANT_URLS"])) return false;
+$parseParams = array(
+	"PARSE_TO_SECTIONS" => !!($arParams["PARSE_TO_SECTIONS"] == "Y")
+);
+
+//if ($debug) $arParams["DISTANT_URLS"] = array($arParams["DISTANT_URLS"][0]); //just one line!
+
+if (!$arCandidates = AdmParser::getCandidates($arParams["DISTANT_URLS"], $parseParams)) return false;
 
 $cConverter = new AdmParserDataConverter();
 
 $cConverter->makeCurrentData();
 $cConverter->checkChanges($arCandidates);
 $cConverter->update($arCandidates);
+
 if ($debug) echo microtime() - $time;
