@@ -1,0 +1,18 @@
+.AdmParser a{
+	color: #00aeff;
+	font-size: 20px;
+    font-weight: 500;
+}
+
+.AdmParser span.news-date-time {
+    font-weight: 500;
+    margin-right: 25px;
+}
+.AdmParser p.news-item{
+	line-height: 25px;
+}
+
+/*
+.AdmParser p.news-item span.descr{
+	padding-left:110px;
+}*/
