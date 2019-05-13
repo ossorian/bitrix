@@ -1,12 +1,17 @@
 <? if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 if (!CModule::IncludeModule("highloadblock")) {
-	echo "Ошибка подключения модуля";
+	echo "Ошибка подключения модуля HighLoad блоков";
 	return;
-} 
+}
 use Bitrix\Highloadblock as HL;
 define('USOFT_MAP_HL_NAME', 'UsoftMapHL');
 define('USOFT_MAP_HL_TABLE_NAME', 'usoft_map');
 $arFields = array('LAT', 'LON');
+
+	//Params
+	if (empty($arParams["LON_MAIN"])) $arParams["LON_MAIN"] = "55.753215";
+	if (empty($arParams["LAT_MAIN"])) $arParams["LAT_MAIN"] = "37.622504";
+	if (empty($arParams["ZOOM_MAIN"])) $arParams["ZOOM_MAIN"] = "10";
 ?>
 <?
 try {
@@ -63,20 +68,63 @@ if (!$entity || !is_object($entity)) {
 
 //getting Data
 $mapClass = $entity->getDataClass();
-$selectFields = array("ID");
-foreach ($arFields as $field) {
-	$selectFields[] = usoftGetFieldName($field);
-}
+
 $result = $mapClass::getList(array(
-	'select' => $selectFields,
+	'select' => array('*'),
 	'order'  => array('ID' => 'ASC'),
 ));
 
 while($arItem = $result->Fetch()) {
-	$arResult["ITEMS"][] = $arItem;
+	$arIDs[] = $arItem["ID"];
+	$arResult["ITEMS"][] = array(
+		"id" => $arItem["ID"],
+		"lat" => $arItem["UF_USOFTMAPHL_LAT"],
+		"lon" => $arItem["UF_USOFTMAPHL_LON"],
+		"changed" => false
+	);
 }
-$this->IncludeComponentTemplate();
 
+if (!empty($_POST['ajax']) && $_POST['data']) {
+	//Обработка Ajax запросов на сохранение
+	$data = json_decode($_POST['data']);
+	if (count($data)) {
+		$inserted = $deleted = 0;
+		foreach ($data as $datum) {
+			$arIDchecked[] = $datum['id'];
+			
+			if ($datum["changed"]) {
+				$arCoords = array("UF_USOFTMAPHL_LAT" => $datum['lat'], "UF_USOFTMAPHL_LON" => $datum['lon']);
+				//Добавление
+				if (array_search($datum['id'], $arIDs) === false) {
+					$mapClass::add($arCoords);
+					$inserted++;
+				}
+				//Изменение
+				else {
+					$mapClass::update($datum['id'], $arCoords);
+				}
+			}
+		}
+		
+		//Удаление
+		$arDeleted = array_diff($arIDs, $arIDchecked);
+		if ($arDeleted) {
+			foreach ($arDeleted as $id) {
+				$mapClass::delete($id);
+				$deleted++;
+			}
+		}
+		
+		if (($inserted + count($arIDs) - $deleted) == count($data)) $result = 'ok';
+		else $result = "Не совпадает количество переданных точек с количеством в БД.";
+	}
+	else $result = "Неверно переданные данные для сохранения";
+	echo $result;
+	die;
+}
+else {
+	$this->IncludeComponentTemplate();
+}
 //to use DRY method!
 function usoftGetFieldName($field) {
 	return 'UF_'.strtoupper(USOFT_MAP_HL_NAME).'_'.$field;

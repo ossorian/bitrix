@@ -1,3 +1,3 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
-$MESS['BXCERT_CMPT_NAME'] = "Êâàçè-êîìïîíåíò";
+$MESS['BXCERT_CMPT_NAME'] = "Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ñ‚Ð¾Ñ‡ÐºÐ°Ð¼Ð¸ ÑÐ½Ð´ÐµÐºÑ-ÐºÐ°Ñ€Ñ‚";
 ?>
