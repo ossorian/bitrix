@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hiblock>
+	<hiblock>
+		<id>16</id>
+		<name>UsoftMapHL</name>
+		<table_name>usoft_map</table_name>
+	</hiblock>
+	<langs>
+	</langs>
+	<fields>
+		<field>
+			<id>32</id>
+			<entity_id>HLBLOCK_16</entity_id>
+			<field_name>UF_USOFTMAPHL_LAT</field_name>
+			<user_type_id>string</user_type_id>
+			<xml_id>UsoftMapHL_LAT</xml_id>
+			<sort>500</sort>
+			<multiple>N</multiple>
+			<mandatory>Y</mandatory>
+			<show_filter>N</show_filter>
+			<show_in_list>Y</show_in_list>
+			<edit_in_list>Y</edit_in_list>
+			<is_searchable>N</is_searchable>
+			<settings>
+				<size>20</size>
+				<rows>1</rows>
+				<regexp />
+				<min_length>0</min_length>
+				<max_length>0</max_length>
+				<default_value />
+			</settings>
+			<base_type>string</base_type>
+		</field>
+		<field>
+			<id>33</id>
+			<entity_id>HLBLOCK_16</entity_id>
+			<field_name>UF_USOFTMAPHL_LON</field_name>
+			<user_type_id>string</user_type_id>
+			<xml_id>UsoftMapHL_LON</xml_id>
+			<sort>500</sort>
+			<multiple>N</multiple>
+			<mandatory>Y</mandatory>
+			<show_filter>N</show_filter>
+			<show_in_list>Y</show_in_list>
+			<edit_in_list>Y</edit_in_list>
+			<is_searchable>N</is_searchable>
+			<settings>
+				<size>20</size>
+				<rows>1</rows>
+				<regexp />
+				<min_length>0</min_length>
+				<max_length>0</max_length>
+				<default_value />
+			</settings>
+			<base_type>string</base_type>
+		</field>
+	</fields>
+	<items>
+		<item>
+			<id>1</id>
+			<uf_usoftmaphl_lat>56.434545</uf_usoftmaphl_lat>
+			<uf_usoftmaphl_lon>123.1231231</uf_usoftmaphl_lon>
+		</item>
+	</items>
+</hiblock>
