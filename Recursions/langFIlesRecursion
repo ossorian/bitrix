@@ -1,0 +1,50 @@
+<?php
+//Более продвинутая рекурсия по всем каталогам в поисках lang файлов
+
+/*
+//Step #1
+$dir_iterator = new RecursiveDirectoryIterator($_SERVER["DOCUMENT_ROOT"] . '/bitrix/components/');
+$iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::SELF_FIRST);
+foreach ($iterator as $file) {
+    if (strpos($file, '/lang/ru/') && !is_dir($file)) {
+        file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/lang_files.txt', $file . PHP_EOL, FILE_APPEND);
+    }
+}
+
+$dir_iterator = new RecursiveDirectoryIterator($_SERVER["DOCUMENT_ROOT"] . '/bitrix/modules/');
+$iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::SELF_FIRST);
+foreach ($iterator as $file) {
+    if (strpos($file, '/lang/ru/') && !is_dir($file)) {
+        file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/lang_files.txt', $file . PHP_EOL, FILE_APPEND);
+    }
+}
+*/
+
+//Step #2
+$mainFilename = $_SERVER['DOCUMENT_ROOT'] . '/local/lang_files.txt';
+$putFilename = $_SERVER['DOCUMENT_ROOT'] . '/local/result.txt';
+
+$mainFile = fopen($mainFilename, 'r');
+while ($filename = fgets($mainFile)) {
+    $filename = str_replace('//', '/', trim($filename));
+    
+    if (strpos($filename, '/install/') !== false) continue;
+    if (strpos($filename, 'restrictionmanager.php') !== false) continue;
+    if (strpos($filename, 'leadsettings.php') !== false) continue;
+    
+    if ($subFile = fopen($filename, 'r')) {
+        while ($row = fgets($subFile)) {
+            if (stripos($row, 'сделк') === 0) {
+                
+                if (substr($row, 0, 5) !== '$MESS') continue;
+                
+                $filePath = str_replace($_SERVER["DOCUMENT_ROOT"], '', $filename);
+                $row = trim($row);
+                $row = substr($row, 0, 5) . "['" . $filePath . "']" . substr($row, 5);
+                file_put_contents($putFilename, $row . "\n", FILE_APPEND);
+            }
+        }
+        fclose($subFile);
+    }
+}
+fclose($mainFile);
