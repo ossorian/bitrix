@@ -1,0 +1,25 @@
+<?
+namespace Nota\Rules;
+
+use Bitrix\Main\Application;
+use Bitrix\Main\IO\Directory;
+
+class Helper
+{
+    static function GetPath($notDocumentRoot = false){
+        if ($notDocumentRoot){
+            return str_ireplace(Application::getDocumentRoot(), '', dirname(__DIR__));
+        }else{
+            return dirname(__DIR__);
+        }
+    }
+
+    static function replaceCoreClasses(){
+        if(\Bitrix\Main\Loader::includeModule('tasks') && Directory::isDirectoryExists($path = self::GetPath().DIRECTORY_SEPARATOR.'classes')){
+            $classesDirectory = new Directory($path);
+            foreach($classesDirectory->getChildren() as $replaceClassItem){
+                require_once $path.DIRECTORY_SEPARATOR.$replaceClassItem->getName();
+            }
+        }
+    }
+}
